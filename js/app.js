@@ -3,6 +3,7 @@ const STORAGE_KEY = 'startweb_pagamentos_contas';
 
 // State
 let bills = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+let editingBillId = null;
 
 // DOM Elements - Navigation
 const navItems = document.querySelectorAll('.nav-item');
@@ -52,8 +53,21 @@ function initNavigation() {
         });
     });
 
-    btnHeaderNewBill.addEventListener('click', () => switchView('add-bill'));
-    btnCancelAdd.addEventListener('click', () => switchView('dashboard'));
+    btnHeaderNewBill.addEventListener('click', () => {
+        editingBillId = null;
+        addBillForm.reset();
+        const headerTitle = document.querySelector('#view-add-bill .panel-header h2');
+        if (headerTitle) headerTitle.innerHTML = '<i class="ph ph-plus-circle"></i>Cadastrar Nova Conta';
+        switchView('add-bill');
+    });
+    
+    btnCancelAdd.addEventListener('click', () => {
+        editingBillId = null;
+        addBillForm.reset();
+        const headerTitle = document.querySelector('#view-add-bill .panel-header h2');
+        if (headerTitle) headerTitle.innerHTML = '<i class="ph ph-plus-circle"></i>Cadastrar Nova Conta';
+        switchView('dashboard');
+    });
 }
 
 function switchView(viewId) {
@@ -213,6 +227,8 @@ function renderTable(data) {
             ? `<button class="btn-secondary btn-sm" disabled title="Já pago" style="opacity: 0.5;"><i class="ph ph-check"></i></button>`
             : `<button class="btn-success-sm" onclick="payBill('${bill.id}')" title="Confirmar Pagamento" style="background: rgba(6, 214, 160, 0.1); color: var(--success); border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer;"><i class="ph ph-check-circle"></i></button>`;
 
+        const editAction = `<button class="btn-secondary btn-sm" onclick="editBill('${bill.id}')" style="border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; color: var(--primary); background: rgba(67, 97, 238, 0.1);" title="Editar Conta"><i class="ph ph-pencil-simple"></i></button>`;
+
         tr.innerHTML = `
             <td><strong>${bill.description}</strong></td>
             <td style="font-family: monospace; color: var(--text-muted);">${bill.barcode}</td>
@@ -221,6 +237,7 @@ function renderTable(data) {
             <td>${statusHtml}</td>
             <td style="display: flex; gap: 8px;">
                 ${payAction}
+                ${editAction}
                 <button class="btn-danger-sm" onclick="deleteBill('${bill.id}')" title="Excluir">
                     <i class="ph ph-trash"></i>
                 </button>
@@ -257,28 +274,44 @@ function updateStats() {
 addBillForm.addEventListener('submit', (e) => {
     e.preventDefault();
 
-    const newBill = {
-        id: generateId(),
-        description: document.getElementById('bill-description').value,
-        barcode: document.getElementById('bill-barcode').value,
-        date: document.getElementById('bill-date').value,
-        value: parseFloat(document.getElementById('bill-value').value),
-        status: 'pending'
-    };
+    if (editingBillId) {
+        // Edit existing
+        const index = bills.findIndex(b => b.id === editingBillId);
+        if (index !== -1) {
+            bills[index].description = document.getElementById('bill-description').value;
+            bills[index].barcode = document.getElementById('bill-barcode').value;
+            bills[index].date = document.getElementById('bill-date').value;
+            bills[index].value = parseFloat(document.getElementById('bill-value').value);
+        }
+        showToast('Conta atualizada com sucesso!', 'success');
+        editingBillId = null;
+        
+        const headerTitle = document.querySelector('#view-add-bill .panel-header h2');
+        if (headerTitle) headerTitle.innerHTML = '<i class="ph ph-plus-circle"></i>Cadastrar Nova Conta';
+    } else {
+        // Create new
+        const newBill = {
+            id: generateId(),
+            description: document.getElementById('bill-description').value,
+            barcode: document.getElementById('bill-barcode').value,
+            date: document.getElementById('bill-date').value,
+            value: parseFloat(document.getElementById('bill-value').value),
+            status: 'pending'
+        };
+        bills.push(newBill);
+        showToast('Conta cadastrada com sucesso!', 'success');
+    }
 
-    bills.push(newBill);
     saveToStorage();
     
     // Reset Form
     addBillForm.reset();
     
-    showToast('Conta cadastrada com sucesso!', 'success');
-    
     // Switch back to dashboard
     switchView('dashboard');
 });
 
-// --- Delete & Pay Logic ---
+// --- Delete, Pay & Edit Logic ---
 window.deleteBill = function(id) {
     if(confirm('Tem certeza que deseja excluir esta conta?')) {
         bills = bills.filter(b => b.id !== id);
@@ -288,6 +321,23 @@ window.deleteBill = function(id) {
             renderReports();
         }
         showToast('Conta removida.', 'success');
+    }
+}
+
+window.editBill = function(id) {
+    const bill = bills.find(b => b.id === id);
+    if(bill) {
+        document.getElementById('bill-description').value = bill.description;
+        document.getElementById('bill-barcode').value = bill.barcode;
+        document.getElementById('bill-date').value = bill.date;
+        document.getElementById('bill-value').value = bill.value;
+        
+        editingBillId = id;
+        
+        const headerTitle = document.querySelector('#view-add-bill .panel-header h2');
+        if (headerTitle) headerTitle.innerHTML = '<i class="ph ph-pencil-simple"></i>Editar Conta';
+        
+        switchView('add-bill');
     }
 }
 
