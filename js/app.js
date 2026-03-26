@@ -355,6 +355,25 @@ function exportToPDF() {
         styles: { fontSize: 9 }
     });
 
+    // Adiciona marca d'agua e rodapé em todas as páginas
+    const totalPages = doc.internal.getNumberOfPages();
+    for (let i = 1; i <= totalPages; i++) {
+        doc.setPage(i);
+        
+        // Watermark Startweb
+        doc.setFontSize(80);
+        doc.setTextColor(230, 230, 230); // Very light gray
+        // Centralizado na diagonal
+        doc.text('Startweb', 105, 150, { angle: 45, align: 'center' });
+        
+        // Footer Dev Info & Date
+        doc.setFontSize(8);
+        doc.setTextColor(100, 100, 100);
+        const printDate = new Date().toLocaleString('pt-BR');
+        const footerText = `Startweb | robertoursinejesus@gmail.com | 11 98285-6216 | Dev responsável: Roberto Ursine | Impresso em: ${printDate} | Pág. ${i} / ${totalPages}`;
+        doc.text(footerText, 105, 290, { align: 'center' });
+    }
+
     doc.save(`Contas_${new Date().toISOString().split('T')[0]}.pdf`);
 }
 
