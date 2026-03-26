@@ -224,7 +224,7 @@ function renderTable(data) {
             : `<span style="background: var(--warning); color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold;">Pendente</span>`;
 
         const payAction = bill.status === 'paid'
-            ? `<button class="btn-secondary btn-sm" disabled title="Já pago" style="opacity: 0.5;"><i class="ph ph-check"></i></button>`
+            ? `<button class="btn-warning-sm" onclick="undoPayBill('${bill.id}')" title="Retornar para Pendente" style="background: rgba(255, 209, 102, 0.2); color: #d4a017; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer;"><i class="ph ph-arrow-u-up-left"></i></button>`
             : `<button class="btn-success-sm" onclick="payBill('${bill.id}')" title="Confirmar Pagamento" style="background: rgba(6, 214, 160, 0.1); color: var(--success); border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer;"><i class="ph ph-check-circle"></i></button>`;
 
         const editAction = `<button class="btn-secondary btn-sm" onclick="editBill('${bill.id}')" style="border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; color: var(--primary); background: rgba(67, 97, 238, 0.1);" title="Editar Conta"><i class="ph ph-pencil-simple"></i></button>`;
@@ -349,6 +349,18 @@ window.payBill = function(id) {
             saveToStorage();
             renderDashboard();
             showToast('Pagamento confirmado!', 'success');
+        }
+    }
+}
+
+window.undoPayBill = function(id) {
+    if(confirm('Deseja retornar esta conta para o status pendente?')) {
+        const bill = bills.find(b => b.id === id);
+        if(bill) {
+            bill.status = 'pending';
+            saveToStorage();
+            renderDashboard();
+            showToast('A conta agora está pendente.', 'success');
         }
     }
 }
