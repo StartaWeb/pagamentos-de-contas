@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle de Pagamentos - StartWeb</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Main Styles -->
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- Favicon -->
+    <link rel="icon" href="imagem/logo.PNG" type="image/svg+xml">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <img src="imagem/logo.PNG" alt="StartWeb Logo" class="logo-img">
+                <h2>StartWeb</h2>
+                <span class="app-subtitle">Pagamentos</span>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-target="dashboard">
+                    <i class="ph ph-squares-four"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="nav-item" data-target="add-bill">
+                    <i class="ph ph-plus-circle"></i>
+                    <span>Nova Conta</span>
+                </a>
+                <a href="#" class="nav-item" data-target="reports">
+                    <i class="ph ph-chart-bar"></i>
+                    <span>Relatórios</span>
+                </a>
+                <a href="#" class="nav-item" data-target="settings">
+                    <i class="ph ph-gear"></i>
+                    <span>Configurações</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-info">
+
+
+                </div>
+                <div class="dev-info"
+                    style="margin-top: 16px; font-size: 0.75rem; color: var(--text-muted); padding-top: 16px; border-top: 1px solid #eef2f8; line-height: 1.4;">
+                    <strong>Startweb</strong><br>
+                    robertoursinejesus@gmail.com<br>
+                    11 98285-6216<br>
+                    Dev responsável: Roberto Ursine
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="top-header">
+                <div class="hero-text">
+                    <h1>Controle de Pagamentos</h1>
+                    <p>Gerencie suas contas com facilidade e precisão.</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-primary" id="btn-header-new-bill">
+                        <i class="ph ph-plus"></i> Adicionar Conta
+                    </button>
+                </div>
+            </header>
+
+            <!-- Views Container -->
+            <div class="views-container">
+                <!-- VIEW: Dashboard (List and Filter) -->
+                <section id="view-dashboard" class="view-section active">
+
+                    <!-- Analytics Cards -->
+                    <div class="analytics-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon bg-blue">
+                                <i class="ph ph-receipt"></i>
+                            </div>
+                            <div class="stat-details">
+                                <h3>Total de Contas</h3>
+                                <p id="stat-total-count">0</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon bg-orange">
+                                <i class="ph ph-clock-countdown"></i>
+                            </div>
+                            <div class="stat-details">
+                                <h3>A Vencer (7 dias)</h3>
+                                <p id="stat-upcoming-count">0</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon bg-green">
+                                <i class="ph ph-currency-dollar"></i>
+                            </div>
+                            <div class="stat-details">
+                                <h3>Valor Total</h3>
+                                <p id="stat-total-value">R$ 0,00</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Filter Area -->
+                    <div class="panel filter-panel">
+                        <div class="panel-header">
+                            <h2><i class="ph ph-funnel"></i>Filtros e Pesquisa</h2>
+                        </div>
+                        <form id="filter-form" class="form-grid">
+                            <div class="input-group">
+                                <label for="search-keyword">Pesquisar (Descrição / Cód. Barras)</label>
+                                <div class="input-with-icon">
+                                    <i class="ph ph-magnifying-glass"></i>
+                                    <input type="text" id="search-keyword" placeholder="Ex: Conta de Luz...">
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <label for="filter-date-start">Data Venc. (Início)</label>
+                                <input type="date" id="filter-date-start">
+                            </div>
+                            <div class="input-group">
+                                <label for="filter-date-end">Data Venc. (Fim)</label>
+                                <input type="date" id="filter-date-end">
+                            </div>
+                            <div class="input-group align-bottom" style="flex-direction: row; gap: 8px;">
+                                <button type="button" class="btn btn-secondary" id="btn-clear-filter"
+                                    style="flex: 1; padding: 12px 0;">
+                                    <i class="ph ph-eraser"></i> Limpar
+                                </button>
+                                <button type="button" class="btn btn-secondary" id="btn-export-pdf"
+                                    style="flex: 1; color: var(--danger); border-color: var(--danger); padding: 12px 0;"
+                                    title="Exportar para PDF">
+                                    <i class="ph ph-file-pdf"></i> PDF
+                                </button>
+                                <button type="button" class="btn btn-secondary" id="btn-export-excel"
+                                    style="flex: 1; color: var(--success); border-color: var(--success); padding: 12px 0;"
+                                    title="Exportar para Excel">
+                                    <i class="ph ph-file-xls"></i> Excel
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Data Table -->
+                    <div class="panel table-panel">
+                        <div class="panel-header">
+                            <h2><i class="ph ph-list-dashes"></i>Lista de Contas</h2>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Descrição</th>
+                                        <th>Código de Barras</th>
+                                        <th>Vencimento</th>
+                                        <th>Valor (R$)</th>
+                                        <th>Status</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="bills-table-body">
+                                    <!-- Rows generated via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="empty-state" id="empty-state">
+                            <img src="imagem/empty.svg" alt="Nenhuma conta" class="empty-img"
+                                onerror="this.style.display='none'">
+                            <i class="ph ph-folder-open empty-icon"
+                                style="font-size: 4rem; color: var(--text-muted); display: none;"></i>
+                            <h3>Nenhuma conta encontrada</h3>
+                            <p>Adicione uma nova conta ou ajuste seus filtros.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VIEW: Add Bill -->
+                <section id="view-add-bill" class="view-section">
+                    <div class="panel form-panel">
+                        <div class="panel-header">
+                            <h2><i class="ph ph-plus-circle"></i>Cadastrar Nova Conta</h2>
+                        </div>
+                        <form id="add-bill-form">
+                            <div class="input-group full-width">
+                                <label for="bill-description">Descrição da Conta *</label>
+                                <input type="text" id="bill-description" required
+                                    placeholder="Ex: Energia Elétrica - Mês 05">
+                            </div>
+
+                            <div class="input-group full-width">
+                                <label for="bill-barcode">Código de Barras *</label>
+                                <div class="input-with-icon">
+                                    <i class="ph ph-barcode"></i>
+                                    <input type="text" id="bill-barcode" required
+                                        placeholder="Digite o código de barras numérico">
+                                </div>
+                            </div>
+
+                            <div class="form-grid-2">
+                                <div class="input-group">
+                                    <label for="bill-date">Data de Vencimento *</label>
+                                    <input type="date" id="bill-date" required>
+                                </div>
+
+                                <div class="input-group">
+                                    <label for="bill-value">Valor (R$) *</label>
+                                    <div class="input-with-icon">
+                                        <i class="ph ph-currency-dollar"></i>
+                                        <input type="number" id="bill-value" required step="0.01" min="0"
+                                            placeholder="0.00">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary" id="btn-cancel-add">Cancelar</button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="ph ph-floppy-disk"></i> Salvar Conta
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+
+                <!-- VIEW: Reports -->
+                <section id="view-reports" class="view-section">
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h2><i class="ph ph-chart-line-up"></i>Relatório Semanal</h2>
+
+                        </div>
+                        <div class="report-content">
+                            <p class="report-desc">Confira o resumo das contas agrupadas por semana de vencimento.</p>
+
+                            <div id="weekly-report-container">
+                                <!-- Generated via JS -->
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VIEW: Settings -->
+                <section id="view-settings" class="view-section">
+                    <div class="panel form-panel">
+                        <div class="panel-header">
+                            <h2><i class="ph ph-gear"></i>Configurações do Sistema</h2>
+                        </div>
+                        <div class="settings-content" style="display: flex; flex-direction: column; gap: 16px;">
+                            <div class="setting-item"
+                                style="display: flex; justify-content: space-between; align-items: center; padding: 16px; background: white; border-radius: var(--border-radius-sm); border: 1px solid #eef2f8;">
+                                <div>
+                                    <h3 style="font-size: 1rem; color: var(--text-main); margin-bottom: 4px;">Modo
+                                        Escuro (Em breve)</h3>
+                                    <p style="color: var(--text-muted); font-size: 0.85rem;">Alternar entre o tema claro
+                                        e escuro</p>
+                                </div>
+                                <label class="switch"
+                                    style="position: relative; display: inline-block; width: 44px; height: 24px;">
+                                    <input type="checkbox" id="toggle-theme" disabled
+                                        style="opacity: 0; width: 0; height: 0;">
+                                    <span class="slider round"
+                                        style="position: absolute; cursor: not-allowed; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; border-radius: 24px;"></span>
+                                </label>
+                            </div>
+                            <div class="setting-item"
+                                style="display: flex; justify-content: space-between; align-items: center; padding: 16px; background: white; border-radius: var(--border-radius-sm); border: 1px solid rgba(239, 71, 111, 0.2);">
+                                <div>
+                                    <h3 style="font-size: 1rem; color: var(--danger); margin-bottom: 4px;">Limpar Todos
+                                        os Dados</h3>
+                                    <p style="color: var(--text-muted); font-size: 0.85rem;">Apaga todas as contas
+                                        permanentemente. Não pode ser desfeito.</p>
+                                </div>
+                                <button type="button" class="btn btn-danger-sm" id="btn-clear-all-data"
+                                    style="padding: 10px 16px; font-weight: bold; font-size: 0.9rem;">
+                                    <i class="ph ph-trash"></i> Apagar Tudo
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Export Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <script src="js/app.js"></script>
+</body>
+
+</html>
